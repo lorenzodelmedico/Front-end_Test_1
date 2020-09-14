@@ -18,17 +18,9 @@ export default {
   }, 
   data (){
     return ({
-      info:{
-        name:[],
-        pokemon:[],
-      },
+      pokemon:[], //utilisation d'un tableau d'objets 
       error: [],
-      infoPokemon:{},
-      url:[]
     })
-  },
-  created(){
-    //methode qui sert à appeler l'appel API avant que le premier render soit effectué
   },
   /*
   computed:{
@@ -48,7 +40,7 @@ export default {
     }
   },*/
   mounted(){
-    this.getName20().then(
+    this.getName20().then( //.then permet d'attendre la fin de la requête get pour ensuite exécuter la fct qui recupere les data 
         (data)=>
           {for(let id = 0 ; id<20 ; id++)
             {this.getName(data[id])}
@@ -58,6 +50,7 @@ export default {
     async getName20() {
       // methode qui sert à récupérer les 20 premiers url
       //Le résultat est recopié dans le tableau url
+      //il sert ensuite à récupérer les informations pokemons
       try{
         const response = await axios.get("https://pokeapi.co/api/v2/pokemon?results=20")
         var id = 0
@@ -82,7 +75,7 @@ export default {
           for (let id=0 ; id<response.data.types.length ; id++){
             types.push(response.data.types[id].type.name)
           }  
-          this.info.pokemon.push({
+          this.pokemon.push({ //construction d'un objet Json, push dans le tableau 
             id:response.data.id,
             name:response.data.name,
             height:response.data.height,
