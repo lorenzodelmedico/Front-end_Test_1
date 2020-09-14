@@ -1,12 +1,9 @@
 <template>
   <div class="pokedex">
     <h1>{{ msg }}</h1>
-    <p id="cache"> {{info}}</p>
-    <ul :key="item" v-for="(item) in info.name">
-      <li>{{item}}</li>
+    <ul>
+      <li>{{url[0]}}</li>
     </ul>
-
-
   </div>
 </template>
 
@@ -22,23 +19,18 @@ export default {
   data (){
     return ({
       info:{
-        name:{},
-        url:{},
-        pokemon:{
-          id:"",
-          types:{},
-          height:"",
-          weight:"",
-          ability:{},
-        }
+        name:[],
+        pokemon:[],
       },
-      error: {},
+      error: [],
+      infoPokemon:{},
+      url:[]
     })
   },
   created(){
     //methode qui sert à appeler l'appel API avant que le premier render soit effectué
-    this.getName20();
   },
+  /*
   computed:{
     filterbyName: function() {
     return this.info.name.sort(function(a, b) {
@@ -54,21 +46,26 @@ export default {
       return 0;
     })
     }
-  },
+  },*/
   mounted(){
-    this.getName("https://pokeapi.co/api/v2/pokemon/1/")
-  },
+    this.getName20().then(
+        (data)=>
+          {for(let id = 0 ; id<20 ; id++)
+            {this.getName(data[id])}
+    }
+    )},
   methods: {
     async getName20() {
-      // methode qui sert à récupérer les 20 premiers noms, et url de l'api Pokemon
-      //Le résultat est recopié dans l'objet "info"
+      // methode qui sert à récupérer les 20 premiers url
+      //Le résultat est recopié dans le tableau url
       try{
         const response = await axios.get("https://pokeapi.co/api/v2/pokemon?results=20")
         var id = 0
+        let url=[]
         for(id=0 ; id<20 ; id++){
-          this.info.name[id+1] = response.data.results[id].name 
-          this.info.url[id+1] = response.data.results[id].url
+          url.push(response.data.results[id].url)
           }
+        return url
       }
       catch (e){
           this.error.push(e)
@@ -77,16 +74,23 @@ export default {
     async getName (url) {
       try{
           const response = await axios.get(url)
-          this.info.pokemon.id = response.data.id
-          this.info.pokemon.height = response.data.height
-          this.info.pokemon.weight = response.data.weight
-          var id = 0
-          for (id=0 ; id<response.data.abilities.length ; id++){
-            this.info.pokemon.ability[id+1] = response.data.abilities[id].ability.name
+          let ability = []
+          let types = []
+          for (let id=0 ; id<response.data.abilities.length ; id++){
+            ability.push(response.data.abilities[id].ability.name)
           }
-          for (id=0 ; id<response.data.types.length ; id++){
-            this.info.pokemon.types[id+1] = response.data.types[id].type.name
-          }    
+          for (let id=0 ; id<response.data.types.length ; id++){
+            types.push(response.data.types[id].type.name)
+          }  
+          this.info.pokemon.push({
+            id:response.data.id,
+            name:response.data.name,
+            height:response.data.height,
+            weight:response.data.weight,
+            ability:ability,
+            types:types
+          })
+            
       }
       catch (e){
           this.error.push(e)
