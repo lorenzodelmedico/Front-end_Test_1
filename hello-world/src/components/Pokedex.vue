@@ -2,27 +2,31 @@
   <div class="pokedex">
 
     <h1>{{ msg }}</h1>
-    
+
     <select name="poke-tri" id="poke-select">
       <option value="">--Order list by--</option>
-      <option value="Name">Name</option>
-      <option value="Type">Type</option>
-      <option value="Id">Id</option>
+      <option v-on:click="this.pokemon.sort((a, b) => a.name.localeCompare(b.name))" value="Name">Name</option>
+      <option v-on:click="this.pokemon.sort((a, b) => (a.types==b.types))" value="Type">Type</option>
+      <option v-on:click="this.pokemon.sort((a, b) => (a.id-b.id))" value="Id">Id</option>
     </select>
+
+    <p>Rechercher un pokemon</p><input type="text" placeholder="par nom ou par type"><button>Rechercher</button>
+
+    <p>Le poids total des 20 pokemons est {{totalWeight}}</p>
+
     <ul class="list">
       <li>
         <ul class="list-item" v-for="item in pokemon" :key="item">
           <li>
-            <img alt="Image de Pokemon" src="${item.image}">
+            <img alt="Image de Pokemon" v-bind:src="item.image"> 
           </li>
-          <li>{{item.name}}</li>
-          <li>{{item.types}}</li>
+          <li class="item-center" id="item-name">{{item.name}}</li>
+          <li class="item-center" id="item-types">{{item.types}}</li>
           <li>{{item.id}}</li>
-
         </ul>
       </li>
     </ul>
-
+    
   </div>
 </template>
 
@@ -39,23 +43,9 @@ export default {
     return ({
       pokemon:[], //utilisation d'un tableau d'objets 
       error: [],
+      totalWeight:[],
     })
   },
-  computed:{
-    getImg:function(name){
-      let asset = "../assets/"+name
-      return asset
-    },/*
-    orderbyName: function() {
-    let tmp = this.pokemon.name
-    tmp.sort()
-    return tmp.sort()
-  },
-    orderbyId: function() {
-    let tmp = this.pokemon.id
-    return tmp.sort()
-    }*/
-    },
   mounted(){
     this.getName20().then( //.then permet d'attendre la fin de la requête get pour ensuite exécuter la fct qui recupere les data 
         (data)=>
@@ -64,15 +54,34 @@ export default {
     }
     )},
   methods: {
+    /*
+    search: function(){
+      let type = []
+      let saisie =document.getElementById("input").value;
+      for (let i = 0; i < this.pokemon.length; i++) {
+        if (this.pokemon[i].name == saisie) {
+          return document.getElementById("item-name").innerHTML()
+          }
+        if (this.pokemon[i].types == saisie) {
+          return document.getElementById("item-name").innerHTML(
+            type.push()
+          )
+          }
+      }
+    },*/
+    /*
+    search:function(){
+      let saisie = document.getElementById("input").value;
+      if (this.pokemon.filter(a => a.name==saisie)) 
+    },*/
     async getName20() {
-      // methode qui sert à récupérer les 20 premiers url
+      // fct qui sert à récupérer les 20 premiers url
       //Le résultat est recopié dans le tableau url
       //il sert ensuite à récupérer les informations pokemons
       try{
         const response = await axios.get("https://pokeapi.co/api/v2/pokemon?results=20")
-        var id = 0
         let url=[]
-        for(id=0 ; id<20 ; id++){
+        for(let id=0 ; id<20 ; id++){
           url.push(response.data.results[id].url)
           }
         return url
@@ -101,7 +110,8 @@ export default {
             types:types,
             image:"../assets/"+response.data.name+".png"
           })
-            
+          let values = this.pokemon.map(poke => poke.weight)
+          this.totalWeight = values.reduce((accumulator, currentValue) => { return accumulator + currentValue }, 0)
       }
       catch (e){
           this.error.push(e)
@@ -123,26 +133,53 @@ ul {
   padding: 0;
 }
 li {
-  display: inline-block;
   margin: 0 10px;
 }
 a {
   color: #42b983;
 }
-#cache{
-  display: none;
-}
+
+
 .list{
   border-style: solid;
   position: relative;
-  justify-content: center;
 }
 .list-item{
+  margin:auto;
+  display: flex;
+  flex-direction: row;
+  flex:7;
+  height: 100px;
+  width: 600px;
   border-style: solid;
-  position: relative;
   border-width: 1px;
   border-color:darkred;
-  padding: 10px;
+}
+
+.list-item img{
+  flex:2;
+  width: 50px;
+}
+
+.item-center{
+  flex: 4;
+  flex-direction: row;
+}
+
+.item-right{
+  flex: 1;
+}
+
+#item-name{
+  font-size:20px;
+  font-weight: bold;
+}
+#item-types{
+  font-size: 15px;
+
+}
+button{
+  width: 100px;
   margin: 5px;
 }
 </style>
