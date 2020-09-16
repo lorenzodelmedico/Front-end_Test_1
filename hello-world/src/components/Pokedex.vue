@@ -43,7 +43,7 @@ export default {
     return ({
       pokemon:[], //utilisation d'un tableau d'objets 
       error: [],
-      totalWeight:[],
+      totalWeight:Number,
     })
   },
   mounted(){
@@ -64,7 +64,6 @@ export default {
           }
         if (this.pokemon[i].types == saisie) {
           return document.getElementById("item-name").innerHTML(
-            type.push()
           )
           }
       }
@@ -141,7 +140,6 @@ a {
 
 
 .list{
-  border-style: solid;
   position: relative;
 }
 .list-item{
