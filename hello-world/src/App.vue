@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
+    <img alt="Pokemon Professeur Chen" src="./assets/chen.png">
     <Pokedex msg="Bienvenue dans ton Pokédex"/>
   </div>
 </template>

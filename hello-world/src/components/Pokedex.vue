@@ -1,9 +1,28 @@
 <template>
   <div class="pokedex">
+
     <h1>{{ msg }}</h1>
-    <ul>
-      <li>{{url[0]}}</li>
+    
+    <select name="poke-tri" id="poke-select">
+      <option value="">--Order list by--</option>
+      <option value="Name">Name</option>
+      <option value="Type">Type</option>
+      <option value="Id">Id</option>
+    </select>
+    <ul class="list">
+      <li>
+        <ul class="list-item" v-for="item in pokemon" :key="item">
+          <li>
+            <img alt="Image de Pokemon" src="${item.image}">
+          </li>
+          <li>{{item.name}}</li>
+          <li>{{item.types}}</li>
+          <li>{{item.id}}</li>
+
+        </ul>
+      </li>
     </ul>
+
   </div>
 </template>
 
@@ -22,23 +41,21 @@ export default {
       error: [],
     })
   },
-  /*
   computed:{
-    filterbyName: function() {
-    return this.info.name.sort(function(a, b) {
-      var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-      var nameB = b.name.toUpperCase(); // ignore upper and lowercase
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      // names must be equal
-      return 0;
-    })
-    }
-  },*/
+    getImg:function(name){
+      let asset = "../assets/"+name
+      return asset
+    },/*
+    orderbyName: function() {
+    let tmp = this.pokemon.name
+    tmp.sort()
+    return tmp.sort()
+  },
+    orderbyId: function() {
+    let tmp = this.pokemon.id
+    return tmp.sort()
+    }*/
+    },
   mounted(){
     this.getName20().then( //.then permet d'attendre la fin de la requête get pour ensuite exécuter la fct qui recupere les data 
         (data)=>
@@ -81,7 +98,8 @@ export default {
             height:response.data.height,
             weight:response.data.weight,
             ability:ability,
-            types:types
+            types:types,
+            image:"../assets/"+response.data.name+".png"
           })
             
       }
@@ -113,5 +131,18 @@ a {
 }
 #cache{
   display: none;
+}
+.list{
+  border-style: solid;
+  position: relative;
+  justify-content: center;
+}
+.list-item{
+  border-style: solid;
+  position: relative;
+  border-width: 1px;
+  border-color:darkred;
+  padding: 10px;
+  margin: 5px;
 }
 </style>
